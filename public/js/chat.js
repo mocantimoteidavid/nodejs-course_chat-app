@@ -1,13 +1,22 @@
 const socket = io();
 
-socket.on("messageFromServer", (message) => {
-    console.log(message);
-});
-
+// Elements
 const messageForm = document.getElementById("chatForm");
 const messageFormInput = document.getElementById("chatInput");
 const messageFormButton = document.getElementById("chatSendButton");
 const shareLocationButton = document.getElementById("shareLocationButton")
+const messagesDiv = document.getElementById("messages");
+
+// Templates
+const messageTemplate = document.getElementById("message-template").innerHTML;
+
+socket.on("messageFromServer", (message) => {
+    console.log(message);
+
+    const html = Mustache.render(messageTemplate, { message });
+    messagesDiv.insertAdjacentHTML('beforeend', html);
+
+});
 
 messageForm.addEventListener("submit", (e) => {
     e.preventDefault();
