@@ -9,14 +9,21 @@ const messagesDiv = document.getElementById("messages");
 
 // Templates
 const messageTemplate = document.getElementById("message-template").innerHTML;
+const locationMessageTemplate = document.getElementById("location-message-template").innerHTML;
 
 socket.on("messageFromServer", (message) => {
     console.log(message);
 
     const html = Mustache.render(messageTemplate, { message });
     messagesDiv.insertAdjacentHTML('beforeend', html);
-
 });
+
+socket.on("locationMessageFromServer", (message) => {
+    console.log(message);
+
+    const html = Mustache.render(locationMessageTemplate, { message });
+    messagesDiv.insertAdjacentHTML('beforeend', html);
+})
 
 messageForm.addEventListener("submit", (e) => {
     e.preventDefault();
