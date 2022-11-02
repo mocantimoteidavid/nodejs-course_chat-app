@@ -3,6 +3,7 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const Filter = require("bad-words");
+const { generateMessage, generateLocationMessage } = require("./utils/messages");
 
 const app = express();
 const server = http.createServer(app);
@@ -16,8 +17,8 @@ app.use(express.static(publicDirectoryPath));
 io.on("connection", (socket) => {
     console.log("New web socket connection found");
 
-    socket.emit("messageFromServer", "Welcome!");
-    socket.broadcast.emit("messageFromServer", "A new user has joined!");
+    socket.emit("messageFromServer", generateMessage("Welcome!"));
+    socket.broadcast.emit("messageFromServer", generateMessage("A new user has joined!"));
 
     socket.on("messageFromClient", (message, callback) => { 
         const filter = new Filter();
@@ -26,17 +27,16 @@ io.on("connection", (socket) => {
             return callback("Profanity is not allowed");
         }
 
-        io.emit("messageFromServer", message);
+        io.emit("messageFromServer", generateMessage(message));
         callback();
     });
 
     socket.on("disconnect", () => {
-        io.emit("messageFromServer", "A user has left!");
+        io.emit("messageFromServer", generateMessage("A user has left!"));
     })
 
     socket.on("locationFromClient", (locationObject, callback) => { 
-        const locationLink = `https://google.com/maps?q=${locationObject.lat},${locationObject.long}`;
-        io.emit("locationMessageFromServer", locationLink);
+        io.emit("locationMessageFromServer", generateLocationMessage(locationObject));
         callback();
     });
 });
